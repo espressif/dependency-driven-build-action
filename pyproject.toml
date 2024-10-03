@@ -1,7 +1,21 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dependency-driven-build-action"
+version = "0.1.0"
+description = "Python scripts for dependency-driven-build-action"
+requires-python = ">=3.7"
+authors = [
+    {name = "Fu Hanxi", email = "fuhanxi@espressif.com"},
+]
+
+[tool.ruff]
 line-length = 120
 target-version = "py37"
 
-[lint]
+[tool.ruff.lint]
 select = [
     'F',   # Pyflakes
     'E',   # pycodestyle
@@ -16,6 +30,6 @@ select = [
     'RUF', # Ruff-specific rules
 ]
 
-[format]
+[tool.ruff.format]
 quote-style = "single"
 docstring-code-format = true
