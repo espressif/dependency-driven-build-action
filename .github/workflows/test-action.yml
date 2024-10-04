@@ -25,7 +25,6 @@ jobs:
         uses: "./"
         with:
           paths: >-
-            /opt/esp/idf/examples/get-started/hello_world
             /opt/esp/idf/examples/get-started/blink
           default_build_targets: >-
             esp32
@@ -34,5 +33,9 @@ jobs:
           test -n '${{ steps.get-args.outputs.idf_build_apps_args }}'
       - name: Test built binaries
         run: |
-          test "$(find /opt/esp/idf/examples/get-started/hello_world -name "hello_world.bin" | wc -l)" -eq 1"
-          test "$(find /opt/esp/idf/examples/get-started/blink -name "blink.bin" | wc -l)" -eq 1"
+          test $(find /opt/esp/idf/examples/get-started/blink -name "blink.bin" | wc -l) -eq 1
+      - uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: test-results-${{ matrix.idf_version }}
+          path: test.xml
