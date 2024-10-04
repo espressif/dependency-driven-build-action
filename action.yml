@@ -11,6 +11,8 @@ inputs:
   manifest-filepatterns:
     description: 'Manifest file patterns'
     default: '**/.build-test-rules.yml'
+  additional_arguments:
+    description: 'Additional arguments to pass to idf-build-apps'
 outputs:
   modified_files:
     description: 'Modified files'
@@ -79,4 +81,5 @@ runs:
           --default-build-targets ${{ inputs.default_build_targets }} \
           --manifest-rootpath $IDF_PATH \
           --manifest-filepatterns ${{ inputs.manifest-filepatterns }} \
-          ${{ steps.set-output.outputs.idf_build_apps_args }}
+          ${{ steps.set-output.outputs.idf_build_apps_args }} \
+          ${{ inputs.additional_arguments || '' }}

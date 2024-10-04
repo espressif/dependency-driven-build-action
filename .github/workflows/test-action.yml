@@ -30,6 +30,8 @@ jobs:
             /opt/esp/idf/examples/get-started/blink
           default_build_targets: >-
             esp32
+          additional_arguments: >-
+            --junitxml test.xml
       - name: Test get-args
         run: |
           test -z '${{ steps.get-args.outputs.idf_build_apps_args }}'
