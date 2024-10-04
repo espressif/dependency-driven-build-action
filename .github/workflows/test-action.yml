@@ -23,6 +23,8 @@ jobs:
         uses: actions/checkout@v4
       - id: get-args
         uses: "./"
+        env:
+          BUILD_AND_TEST_ALL_APPS: "1"
         with:
           paths: >-
             /opt/esp/idf/examples/get-started/blink
@@ -30,7 +32,7 @@ jobs:
             esp32
       - name: Test get-args
         run: |
-          test -n '${{ steps.get-args.outputs.idf_build_apps_args }}'
+          test -z '${{ steps.get-args.outputs.idf_build_apps_args }}'
       - name: Test built binaries
         run: |
           test $(find /opt/esp/idf/examples/get-started/blink -name "blink.bin" | wc -l) -eq 1

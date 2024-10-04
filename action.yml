@@ -25,8 +25,12 @@ runs:
       id: set-default-values
       shell: bash
       run: |
-        echo "BUILD_AND_TEST_ALL_APPS=0" >> $GITHUB_ENV
-        echo "BUILD_ONLY=0" >> $GITHUB_ENV
+        if [ -z "$BUILD_AND_TEST_ALL_APPS" ]; then
+            echo "BUILD_AND_TEST_ALL_APPS=0" >> $GITHUB_ENV
+        fi
+        if [ -z "$BUILD_ONLY" ]; then
+            echo "BUILD_ONLY=0" >> $GITHUB_ENV
+        fi
     - id: fix-git-repo-permissions
       # Needed by the next git diff step.
       # See https://github.com/actions/runner/issues/2033
