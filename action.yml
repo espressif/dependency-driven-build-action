@@ -1,5 +1,13 @@
 name: 'Get idf-build-apps arguments'
 inputs:
+  paths:
+    description: space-separated paths to the esp-idf project
+    default: .
+  build_dir:
+    description: build directory
+    default: build_@t
+  default_build_targets:
+    description: space-separated default build target list. by default all ESP-IDF supported targets
   manifest-filepatterns:
     description: 'Manifest file patterns'
     default: '**/.build-test-rules.yml'
@@ -51,3 +59,20 @@ runs:
       run: |
         echo "modified_files=$(cat changed_files.txt | xargs)" >> $GITHUB_OUTPUT
         echo "idf_build_apps_args=$(cat idf_build_apps_args.txt)" >> $GITHUB_OUTPUT
+    - id: run-build-apps
+      shell: bash
+      run: |
+        . $IDF_PATH/export.sh
+        pip install -U idf-build-apps
+        idf-build-apps build \
+          -v \
+          --paths ${{ inputs.paths }} \
+          --build-dir ${{ inputs.build_dir }} \
+          --recursive \
+          --keep-going \
+          --check-warnings \
+          --build-log-filename build.log \
+          --default-build-targets ${{ inputs.default_build_targets }} \
+          --manifest-rootpath $IDF_PATH \
+          --manifest-filepatterns ${{ inputs.manifest-filepatterns }} \
+          ${{ steps.set-output.outputs.idf_build_apps_args }}
