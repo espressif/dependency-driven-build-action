@@ -1,5 +1,4 @@
-name: 'Hello World'
-description: 'Greet someone'
+name: 'Get idf-build-apps arguments'
 inputs:
   manifest-filepatterns:
     description: 'Manifest file patterns'
@@ -7,10 +6,10 @@ inputs:
 outputs:
   modified_files:
     description: 'Modified files'
-    value: ${{ steps.get-pr-changes.outputs.modified_files }}
+    value: ${{ steps.set-output.outputs.modified_files }}
   idf_build_apps_args:
     description: 'idf-build-apps arguments'
-    value: ${{ steps.get-pr-changes.outputs.idf_build_apps_args }}
+    value: ${{ steps.set-output.outputs.idf_build_apps_args }}
 runs:
   using: "composite"
   steps:
@@ -20,8 +19,16 @@ runs:
       run: |
         echo "BUILD_AND_TEST_ALL_APPS=0" >> $GITHUB_ENV
         echo "BUILD_ONLY=0" >> $GITHUB_ENV
-        echo "MODIFIED_FILES=" >> $GITHUB_ENV
-        echo "IDF_BUILD_APPS_ARGS=" >> $GITHUB_ENV
+    - id: fix-git-repo-permissions
+      # Needed by the next git diff step.
+      # See https://github.com/actions/runner/issues/2033
+      if: ${{ github.event_name == 'pull_request' }}
+      shell: bash
+      run: |
+        build_dir=$PWD
+        cd /
+        git config --global --add safe.directory $build_dir
+        cd -
     - id: apply-build-and-test-all-apps
       if: ${{ github.ref == github.default_branch || contains(github.event.pull_request.labels.*.name, 'build-and-test-all-apps') }}
       shell: bash
@@ -38,11 +45,9 @@ runs:
         git fetch --recurse-submodules=no origin pull/${{ github.event.pull_request.number }}/head:pr_ref
         git diff --name-only -r base_ref pr_ref > changed_files.txt
         python get_idf_build_apps_args.py changed_files.txt idf_build_apps_args.txt -v
-
-        echo "MODIFIED_FILES=$(cat changed_files.txt | xargs)" >> $GITHUB_ENV
-        echo "IDF_BUILD_APPS_ARGS=$(cat idf_build_apps_args.txt)" >> $GITHUB_ENV
+        cat idf_build_apps_args.txt
     - id: set-output
       shell: bash
       run: |
-        echo "modified_files=$(echo $MODIFIED_FILES)" >> $GITHUB_OUTPUT
-        echo "idf_build_apps_args=$(echo $IDF_BUILD_APPS_ARGS)" >> $GITHUB_OUTPUT
+        echo "modified_files=$(cat changed_files.txt | xargs)" >> $GITHUB_OUTPUT
+        echo "idf_build_apps_args=$(cat idf_build_apps_args.txt)" >> $GITHUB_OUTPUT

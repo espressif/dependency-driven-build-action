@@ -64,13 +64,13 @@ def main() -> None:
 
 
 def _main(args: argparse.Namespace) -> None:
-    if os.getenv('BUILD_AND_TEST_ALL_APPS', False):
+    if os.getenv('BUILD_AND_TEST_ALL_APPS', '0') == '1':
         if args.verbose:
             print('BUILD_AND_TEST_ALL_APPS is set, building all apps')
         args.output.write('')
         return
 
-    modified_files = args.modified_files_list.readlines()
+    modified_files = [_l.strip() for _l in args.modified_files_list.readlines() if _l.strip()]
     idf_build_apps_args = []
     if modified_files:
         idf_build_apps_args += ['--modified-files', '"' + ';'.join(modified_files) + '"']

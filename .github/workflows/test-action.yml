@@ -1,0 +1,24 @@
+name: Test github action with composite run steps
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      matrix:
+        idf_version: [release-v5.0, release-v5.4]
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:${{ matrix.idf_version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - id: get-args
+        uses: "./"
+      - name: Test get-args
+        run: |
+          test -n '${{ steps.get-args.outputs.idf_build_apps_args }}'
