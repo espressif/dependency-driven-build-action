@@ -3,14 +3,18 @@ name: Test github action with composite run steps
 on:
   pull_request:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
-    defaults:
-      run:
-        shell: bash
     strategy:
       matrix:
-        idf_version: [release-v5.0, release-v5.4]
+        idf_version:
+          - release-v5.0
+          - release-v5.4
+      fail-fast: false
     runs-on: ubuntu-latest
     container:
       image: espressif/idf:${{ matrix.idf_version }}
@@ -19,6 +23,23 @@ jobs:
         uses: actions/checkout@v4
       - id: get-args
         uses: "./"
+        env:
+          BUILD_AND_TEST_ALL_APPS: "1"
+        with:
+          paths: >-
+            /opt/esp/idf/examples/get-started/blink
+          default_build_targets: >-
+            esp32
+          additional_arguments: >-
+            --junitxml test.xml
       - name: Test get-args
         run: |
-          test -n '${{ steps.get-args.outputs.idf_build_apps_args }}'
+          test -z '${{ steps.get-args.outputs.idf_build_apps_args }}'
+      - name: Test built binaries
+        run: |
+          test $(find /opt/esp/idf/examples/get-started/blink -name "blink.bin" | wc -l) -eq 1
+      - uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: test-results-${{ matrix.idf_version }}
+          path: test.xml
