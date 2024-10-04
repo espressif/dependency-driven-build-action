@@ -33,3 +33,12 @@ select = [
 [tool.ruff.format]
 quote-style = "single"
 docstring-code-format = true
+
+[tool.commitizen]
+name = "czespressif"
+annotated_tag = true
+changelog_merge_prerelease = true
+tag_format = "v$version"
+update_changelog_on_bump = true
+version_provider = "pep621"
+types_in_changelog = ["feat", "fix", "change"]
