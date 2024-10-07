@@ -6,6 +6,12 @@ inputs:
   build_dir:
     description: build directory
     default: build_@t
+  parallel_index:
+    description: 1-based index of the parallel job
+    default: "1"
+  parallel_count:
+    description: total number of parallel jobs
+    default: "1"
   default_build_targets:
     description: space-separated default build target list. by default all ESP-IDF supported targets
   manifest-filepatterns:
@@ -65,10 +71,12 @@ runs:
       run: |
         echo "modified_files=$(cat changed_files.txt | xargs)" >> $GITHUB_OUTPUT
         echo "idf_build_apps_args=$(cat idf_build_apps_args.txt)" >> $GITHUB_OUTPUT
+        echo "::set-output name=upload_filepatterns::$(python get_upload_filepatterns.py ${{ inputs.paths }})"
     - id: run-build-apps
       shell: bash
       run: |
         . $IDF_PATH/export.sh
+        echo "IDF_VERSION=$(idf.py --version | cut -d' ' -f 2 | cut -d'-' -f 1)" >> $GITHUB_ENV
         pip install -U idf-build-apps
         idf-build-apps build \
           -v \
@@ -77,9 +85,19 @@ runs:
           --recursive \
           --keep-going \
           --check-warnings \
+          --collect-app-info build_info_@p.txt \
           --build-log-filename build.log \
+          --parallel-index ${{ inputs.parallel_index }} \
+          --parallel-count ${{ inputs.parallel_count }} \
           --default-build-targets ${{ inputs.default_build_targets }} \
           --manifest-rootpath $IDF_PATH \
           --manifest-filepatterns ${{ inputs.manifest-filepatterns }} \
           ${{ steps.set-output.outputs.idf_build_apps_args }} \
           ${{ inputs.additional_arguments || '' }}
+    - id: upload-built-binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: app_binaries_${{ env.IDF_VERSION }}_${{ inputs.parallel_index }}
+        path: |
+          ${{ steps.set-output.outputs.upload_filepatterns }}
+          build_info_*.txt

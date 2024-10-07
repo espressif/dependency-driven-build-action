@@ -18,4 +18,4 @@ jobs:
           python-version: '3.7'
       - name: Run tests
         run: |
-          python -m unittest get_idf_build_apps_args.py
+          python -m unittest discover -p '*.py'
