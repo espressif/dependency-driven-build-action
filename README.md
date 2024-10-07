@@ -1,10 +1,13 @@
-# GitHub Action - Dependency-driven Build
+# GitHub Action - Dependency-driven Build & Test
 
-This action builds a ESP-IDF project with [idf-build-apps](https://github.com/espressif/idf-build-apps).
+This action build and test your ESP-IDF projects based on the changed files in the PR.
+
+- build ESP-IDF projects with [idf-build-apps](https://github.com/espressif/idf-build-apps).
+- test ESP-IDF projects with [pytest-embedded](https://github.com/espressif/pytest-embedded).
 
 ## Pre-requisites
 
-To run this action, you need to run it inside a docker container wit
+To run this action, you need to run it inside a docker container with
 
 - python installed
 - ESP-IDF installed
@@ -12,21 +15,27 @@ To run this action, you need to run it inside a docker container wit
 
 We recommend you to use [espressif/idf](https://hub.docker.com/r/espressif/idf) docker image.
 
-## Inputs
+## Getting Started
 
 TODO
 
-## Outputs
+## Usage
 
-### `outputs.modified_files`
+### Inputs
+
+TODO
+
+### Outputs
+
+#### `outputs.modified_files`
 
 A space separated list of files that were modified in the PR.
 
-### `outputs.idf_build_apps_args`
+#### `outputs.idf_build_apps_args`
 
 A space separated list of arguments to pass to `idf-build-apps` command.
 
-## Configurations
+## More Ways to Configure
 
 Not only the inputs, but also from the PR labels, environment variables can be used to configure the action.
 
