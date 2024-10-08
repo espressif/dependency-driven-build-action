@@ -23,9 +23,12 @@ outputs:
   modified_files:
     description: 'Modified files'
     value: ${{ steps.set-output.outputs.modified_files }}
-  idf_build_apps_args:
-    description: 'idf-build-apps arguments'
-    value: ${{ steps.set-output.outputs.idf_build_apps_args }}
+  binaries_artifact_name:
+    description: 'Artifact name for the list of built binaries'
+    value: ${{ steps.set-output-post.outputs.binaries_artifact_name }}
+  built_apps_artifact_name:
+    description: 'Artifact name for the list of built apps'
+    value: ${{ steps.set-output-post.outputs.built_apps_artifact_name }}
 runs:
   using: "composite"
   steps:
@@ -85,7 +88,7 @@ runs:
           --recursive \
           --keep-going \
           --check-warnings \
-          --collect-app-info build_info_@p.txt \
+          --collect-app-info built_apps_@p.txt \
           --build-log-filename build.log \
           --parallel-index ${{ inputs.parallel_index }} \
           --parallel-count ${{ inputs.parallel_count }} \
@@ -100,4 +103,14 @@ runs:
         name: app_binaries_${{ env.IDF_VERSION }}_${{ inputs.parallel_index }}
         path: |
           ${{ steps.set-output.outputs.upload_filepatterns }}
-          build_info_*.txt
+    - id: upload-built-apps-list
+      uses: actions/upload-artifact@v4
+      with:
+        name: built_apps_${{ env.IDF_VERSION }}_${{ inputs.parallel_index }}
+        path:
+          built_apps_*.txt
+    - id: set-output-post
+      shell: bash
+      run: |
+        echo "binaries_artifact_name=app_binaries_${{ env.IDF_VERSION }}_${{ inputs.parallel_index }}" >> $GITHUB_OUTPUT
+        echo "built_apps_artifact_name=built_apps_${{ env.IDF_VERSION }}_${{ inputs.parallel_index }}" >> $GITHUB_OUTPUT
