@@ -21,8 +21,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - id: get-args
-        uses: "./"
+      - id: build-apps
+        uses: "./build"
         env:
           BUILD_AND_TEST_ALL_APPS: "1"
         with:
@@ -32,7 +32,7 @@ jobs:
             esp32
           additional_arguments: >-
             --junitxml test.xml
-      - name: Test get-args
+      - name: Test build job output
         run: |
           test -z '${{ steps.get-args.outputs.idf_build_apps_args }}'
       - name: Test built binaries

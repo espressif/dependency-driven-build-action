@@ -31,9 +31,17 @@ TODO
 
 A space separated list of files that were modified in the PR.
 
-#### `outputs.idf_build_apps_args`
+#### `outputs.binaries_artifact_name`
 
-A space separated list of arguments to pass to `idf-build-apps` command.
+This can be used to download the built apps by the `actions/download-artifact` action.
+
+The downloaded files are the binaries of the built apps residing at the original paths in the repository.
+
+#### `outputs.built_apps_artifact_name`
+
+This can be used to download the built apps by the `actions/download-artifact` action.
+
+The downloaded file contains a list of built apps. Each line is a JSON object that could be deserialized to a `idf_build_apps.App` object.
 
 ## More Ways to Configure
 
