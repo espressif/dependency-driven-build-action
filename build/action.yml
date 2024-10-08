@@ -71,7 +71,7 @@ runs:
       run: |
         echo "modified_files=$(cat changed_files.txt | xargs)" >> $GITHUB_OUTPUT
         echo "idf_build_apps_args=$(cat idf_build_apps_args.txt)" >> $GITHUB_OUTPUT
-        echo "::set-output name=upload_filepatterns::$(python get_upload_filepatterns.py ${{ inputs.paths }})"
+        echo "upload_filepatterns<<EOF"$'\n'"$(python get_upload_filepatterns.py ${{ inputs.paths }})"$'\n'"EOF" >> $GITHUB_OUTPUT
     - id: run-build-apps
       shell: bash
       run: |

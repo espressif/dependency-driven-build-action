@@ -15,10 +15,6 @@ DEFAULT_UPLOAD_FILEPATTERNS = [
 ]
 
 
-def escape_newline_in_github_set_output(s: str) -> str:
-    return s.replace('\n', '%0A')
-
-
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument('input_paths', nargs='+', help='space separated list of input paths')
@@ -39,7 +35,7 @@ if __name__ == '__main__':
     parser = get_parser()
     args = parser.parse_args()
 
-    print(escape_newline_in_github_set_output('\n'.join(expand_input_paths(args.input_paths))))
+    print('\n'.join(expand_input_paths(args.input_paths)))
 
 
 class TestExpandInputPaths(unittest.TestCase):
