@@ -3,5 +3,5 @@
 ## Running Python Tests
 
 ```bash
-python -m unittest get_idf_build_apps_args.py
+python -m unittest discover -p '*.py'
 ```
